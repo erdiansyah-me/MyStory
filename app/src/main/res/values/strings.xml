@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">MyStoryApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="story_app_logo">story app logo</string>
+    <string name="story_app_name">StoryCap</string>
+    <string name="message_login_page">Share Your Story With The World!</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">LOGIN</string>
+    <string name="copyright">© 2022 Erdiansyah</string>
+    <string name="regist_message">Don\'t have an account yet? Click Button Below</string>
+    <string name="register">REGISTER</string>
+    <string name="name">Name</string>
+    <string name="date_publish">date publish</string>
+    <string name="story_image">story image</string>
+    <string name="gallery">GALLERY</string>
+    <string name="camera">CAMERA</string>
+    <string name="upload">UPLOAD</string>
+    <string name="description">Description</string>
+    <string name="logout">logout</string>
+    <string name="addStoryDesc">Leading you to add story page so you can share your story with people</string>
+    <string name="descDesc">Add Story Description…</string>
+    <string name="addLocation">Add Location</string>
+    <string name="retry">Try Again</string>
+</resources>

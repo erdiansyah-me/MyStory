@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.erdiansyah.mystory.presenter.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_storyFragment"
+            app:destination="@id/storyFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/storyFragment"
+        android:name="com.erdiansyah.mystory.presenter.StoryFragment"
+        android:label="fragment_story"
+        tools:layout="@layout/fragment_story" >
+        <action
+            android:id="@+id/action_storyFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_storyFragment_to_addStoryFragment"
+            app:destination="@id/addStoryFragment" />
+        <action
+            android:id="@+id/action_storyFragment_to_detailStoryFragment"
+            app:destination="@id/detailStoryFragment" />
+        <action
+            android:id="@+id/action_storyFragment_to_mapsStoryFragment"
+            app:destination="@id/mapsStoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.erdiansyah.mystory.presenter.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addStoryFragment"
+        android:name="com.erdiansyah.mystory.presenter.AddStoryFragment"
+        android:label="fragment_add_story"
+        tools:layout="@layout/fragment_add_story" >
+        <action
+            android:id="@+id/action_addStoryFragment_to_storyFragment"
+            app:destination="@id/storyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailStoryFragment"
+        android:name="com.erdiansyah.mystory.presenter.DetailStoryFragment"
+        android:label="fragment_detail_story"
+        tools:layout="@layout/fragment_detail_story" >
+        <action
+            android:id="@+id/action_detailStoryFragment_to_storyFragment"
+            app:destination="@id/storyFragment" />
+        <argument
+            android:name="name"
+            app:argType="string"
+            android:defaultValue="defaultName" />
+        <argument
+            android:name="description"
+            app:argType="string"
+            android:defaultValue="defaultDescription" />
+        <argument
+            android:name="createdAt"
+            app:argType="string"
+            android:defaultValue="defaultCreatedAt" />
+        <argument
+            android:name="photoUrl"
+            app:argType="string"
+            android:defaultValue="defaultPhotoUrl" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapsStoryFragment"
+        android:name="com.erdiansyah.mystory.presenter.MapsStoryFragment"
+        android:label="fragment_maps_story"
+        tools:layout="@layout/fragment_maps_story" >
+        <action
+            android:id="@+id/action_mapsStoryFragment_to_storyFragment"
+            app:destination="@id/storyFragment" />
+    </fragment>
+</navigation>
