@@ -19,7 +19,7 @@ import javax.inject.Inject
 class StoryViewModel @Inject constructor(
     private val repository: StoryRepository
 ) : ViewModel() {
-    //private val _getStoryResponse = MutableLiveData<Pager<Int, ListStoryItem>>()
+
     val getStoryResponse = repository.getStory().cachedIn(viewModelScope)
 
     private val _postStoryResponse = MutableLiveData<Result<PostStoryResponse>>()
@@ -27,12 +27,6 @@ class StoryViewModel @Inject constructor(
 
     private val _getStoryLocationResponse = MutableLiveData<Result<StoryLocationResponse>>()
     val getStoryLocationResponse: LiveData<Result<StoryLocationResponse>> = _getStoryLocationResponse
-
-//    fun getStory() {
-//        viewModelScope.launch {
-//            _getStoryResponse.postValue(repository.getStory())
-//        }
-//    }
 
     fun resetForm() {
         _postStoryResponse.value = Result.NoState()

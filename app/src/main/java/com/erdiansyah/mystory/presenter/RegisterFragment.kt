@@ -10,8 +10,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
-import com.erdiansyah.mystory.R
 import com.erdiansyah.mystory.data.Result
 import com.erdiansyah.mystory.databinding.FragmentRegisterBinding
 

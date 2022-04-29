@@ -1,16 +1,19 @@
 package com.erdiansyah.mystory.presenter
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.*
-import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.erdiansyah.mystory.R
 import com.erdiansyah.mystory.data.remote.ListStoryItem
 import com.erdiansyah.mystory.databinding.FragmentStoryBinding
+
 
 class StoryFragment : Fragment() {
     private var _binding: FragmentStoryBinding? = null
@@ -22,6 +25,7 @@ class StoryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val timeDelay: Long = 1000
         _binding = FragmentStoryBinding.inflate(inflater, container, false)
         binding.rvStory.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -49,12 +53,26 @@ class StoryFragment : Fragment() {
         storyViewModel.getStoryResponse.observe(viewLifecycleOwner){
             mAdapter.submitData(lifecycle,it)
         }
+        binding.refreshLayout.setOnRefreshListener {
+            mAdapter.refresh()
+            Handler(Looper.getMainLooper()).postDelayed({
+                binding.refreshLayout.isRefreshing = false
+            }, timeDelay)
+        }
         return binding.root
     }
 
     override fun onResume() {
         super.onResume()
         mAdapter.refresh()
+        requireView().isFocusableInTouchMode = true
+        requireView().requestFocus()
+        requireView().setOnKeyListener { v, keyCode, event ->
+            if (event.action === KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                activity?.finish()
+                true
+            } else false
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

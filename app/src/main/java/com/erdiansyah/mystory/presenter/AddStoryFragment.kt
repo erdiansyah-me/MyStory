@@ -27,6 +27,7 @@ import com.google.android.gms.location.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
@@ -39,6 +40,8 @@ class AddStoryFragment : Fragment() {
     private val storyViewModel: StoryViewModel by activityViewModels()
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var getFile: File? = null
+    private lateinit var photoMultiPart : MultipartBody.Part
+    private lateinit var description : RequestBody
 
     private lateinit var currentPhotoPath: String
 
@@ -50,6 +53,19 @@ class AddStoryFragment : Fragment() {
             val result = BitmapFactory.decodeFile(myFile.path)
             getFile = myFile
             binding.imageView.setImageBitmap(result)
+        }
+    }
+
+    val locationPermissionRequest = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                uploadWithLocation()
+            }
+            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                uploadWithLocation()
+            }
         }
     }
 
@@ -103,36 +119,15 @@ class AddStoryFragment : Fragment() {
     private fun uploadStory(){
         if (getFile != null) {
             val file = reduceFileImage(getFile as File)
-            val description = binding.descTextArea.text.toString().toRequestBody("text/plain".toMediaType())
+            description = binding.descTextArea.text.toString().toRequestBody("text/plain".toMediaType())
             val requestPhoto = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-            val photoMultiPart: MultipartBody.Part = MultipartBody.Part.createFormData(
+            photoMultiPart = MultipartBody.Part.createFormData(
                 "photo",
                 file.name,
                 requestPhoto
             )
             if (binding.locationCB.isChecked){
-                if     (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
-                    checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-                ){
-                    fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
-                        if (location != null) {
-                            val lat = location.latitude
-                            val lon = location.longitude
-                            storyViewModel.postStory(photoMultiPart, description, lat, lon)
-                            Toast.makeText(
-                                requireContext(),
-                                "Upload with Location",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "Location is not found.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                }
+                uploadWithLocation()
             } else {
                 storyViewModel.postStory(photoMultiPart, description, null, null)
                 Toast.makeText(
@@ -143,6 +138,36 @@ class AddStoryFragment : Fragment() {
             }
         }
     }
+
+    private fun uploadWithLocation(){
+        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+        ){
+            fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    val lat = location.latitude
+                    val lon = location.longitude
+                    storyViewModel.postStory(photoMultiPart, description, lat, lon)
+                    Toast.makeText(
+                        requireContext(),
+                        "Upload with Location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Location is not found.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else {
+            locationPermissionRequest.launch(arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION))
+        }
+    }
+
     private fun startGallery() {
         val intent = Intent()
         intent.action = Intent.ACTION_GET_CONTENT

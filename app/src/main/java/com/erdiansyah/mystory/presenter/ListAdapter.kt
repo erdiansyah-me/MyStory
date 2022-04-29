@@ -1,6 +1,5 @@
 package com.erdiansyah.mystory.presenter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
@@ -11,7 +10,6 @@ import com.erdiansyah.mystory.R
 import com.erdiansyah.mystory.data.remote.ListStoryItem
 import com.erdiansyah.mystory.databinding.StoryItemBinding
 import com.erdiansyah.mystory.util.DateFormatter
-import com.erdiansyah.mystory.util.DiffUtilList
 import java.util.*
 
 class ListAdapter : PagingDataAdapter<ListStoryItem, ListAdapter.ListViewHolder>(DIFF_CALLBACK){
@@ -50,12 +48,6 @@ class ListAdapter : PagingDataAdapter<ListStoryItem, ListAdapter.ListViewHolder>
         }
     }
 
-//    fun setListItem(item: List<ListStoryItem>){
-//        val diffUtil = DiffUtilList(listItem, item)
-//        val diffResults = DiffUtil.calculateDiff(diffUtil)
-//        this.listItem = item
-//        diffResults.dispatchUpdatesTo(this)
-//    }
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListStoryItem>() {
             override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
