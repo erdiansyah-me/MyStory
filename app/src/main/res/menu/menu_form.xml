@@ -5,7 +5,7 @@
         android:id="@+id/locationStoryButton"
         android:icon="@drawable/ic_baseline_location_on_24"
         app:showAsAction="always"
-        android:title="@string/logout" />
+        android:title="@string/location" />
     <item
         android:id="@+id/logoutButton"
         android:icon="@drawable/ic_baseline_exit_to_app_24"

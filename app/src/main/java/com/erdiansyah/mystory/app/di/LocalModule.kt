@@ -3,7 +3,6 @@ package com.erdiansyah.mystory.app.di
 import android.content.Context
 import androidx.room.Room
 import com.erdiansyah.mystory.app.Config
-import com.erdiansyah.mystory.data.local.StoryDao
 import com.erdiansyah.mystory.data.local.StoryDatabase
 import dagger.Module
 import dagger.Provides
@@ -25,9 +24,4 @@ object LocalModule {
         )
         .fallbackToDestructiveMigration()
         .build()
-
-    @Provides
-    fun provideStoryDao(storyDatabase: StoryDatabase): StoryDao {
-        return storyDatabase.storyDao()
-    }
 }

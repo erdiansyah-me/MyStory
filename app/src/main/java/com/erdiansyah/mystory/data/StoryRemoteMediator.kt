@@ -1,15 +1,18 @@
 package com.erdiansyah.mystory.data
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.erdiansyah.mystory.data.local.RemoteKeys
+import com.erdiansyah.mystory.data.local.RemoteKeysDao
 import com.erdiansyah.mystory.data.local.StoryDao
 import com.erdiansyah.mystory.data.local.StoryDatabase
 import com.erdiansyah.mystory.data.remote.ListStoryItem
 import com.erdiansyah.mystory.data.remote.RemoteDataSource
+import com.erdiansyah.mystory.data.remote.StoryService
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -17,28 +20,21 @@ import javax.inject.Inject
 class StoryRemoteMediator @Inject constructor(
     private val database: StoryDatabase,
     private val dataSource: RemoteDataSource
+//    private val remoteKeysDao: RemoteKeysDao,
+//    private val storyDao: StoryDao
 ) : RemoteMediator<Int, ListStoryItem>() {
 
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ListStoryItem>
     ): MediatorResult {
-        val page = when (loadType) {
-            LoadType.REFRESH -> {
-                val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
-                remoteKeys?.nextKey?.minus(1) ?: INITIAL_PAGE_INDEX
+        val pageKeyData = getKeyPageData(loadType, state)
+        val page = when (pageKeyData) {
+            is MediatorResult.Success -> {
+                return pageKeyData
             }
-            LoadType.PREPEND -> {
-                val remoteKeys = getRemoteKeyForFirstItem(state)
-                val prevKey = remoteKeys?.prevKey
-                    ?:return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
-                prevKey
-            }
-            LoadType.APPEND -> {
-                val remoteKeys = getRemoteKeyForLastItem(state)
-                val nextKey = remoteKeys?.nextKey
-                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
-                nextKey
+            else -> {
+                pageKeyData as Int
             }
         }
         try {
@@ -55,14 +51,32 @@ class StoryRemoteMediator @Inject constructor(
                 val keys = responseData.data?.listStory?.map {
                     RemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
-                if (keys != null) {
-                    database.remoteKeysDao().insertAll(keys)
-                }
+                database.remoteKeysDao().insertAll(keys ?: emptyList())
                 database.storyDao().insertStory(responseData.data?.listStory ?: emptyList())
             }
-            return MediatorResult.Success(endOfPaginationReached)
+            return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (e: Exception) {
             return MediatorResult.Error(e)
+        }
+    }
+
+    private suspend fun getKeyPageData(loadType: LoadType, state: PagingState<Int, ListStoryItem>): Any {
+        return when (loadType) {
+            LoadType.REFRESH -> {
+                val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
+                remoteKeys?.nextKey?.minus(1) ?: INITIAL_PAGE_INDEX
+            }
+            LoadType.APPEND -> {
+                val remoteKeys = getRemoteKeyForLastItem(state)
+                val nextKey = remoteKeys?.nextKey
+                return nextKey ?: MediatorResult.Success(endOfPaginationReached = false)
+            }
+            LoadType.PREPEND -> {
+                val remoteKeys = getRemoteKeyForFirstItem(state)
+                val prevKey = remoteKeys?.prevKey ?: return MediatorResult.Success(endOfPaginationReached = false)
+                prevKey
+
+            }
         }
     }
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, ListStoryItem>): RemoteKeys? {

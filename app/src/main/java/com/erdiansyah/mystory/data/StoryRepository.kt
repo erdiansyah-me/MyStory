@@ -2,18 +2,15 @@ package com.erdiansyah.mystory.data
 
 import androidx.lifecycle.LiveData
 import androidx.paging.*
-import com.erdiansyah.mystory.data.local.StoryDao
 import com.erdiansyah.mystory.data.local.StoryDatabase
 import com.erdiansyah.mystory.data.remote.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.internal.wait
 import javax.inject.Inject
 
 class StoryRepository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
-    private val storyDao: StoryDao,
-    private val mediator: StoryRemoteMediator
+    private val database: StoryDatabase,
 ) {
     @OptIn(ExperimentalPagingApi::class)
     fun getStory(): LiveData<PagingData<ListStoryItem>> {
@@ -21,9 +18,9 @@ class StoryRepository @Inject constructor(
             config = PagingConfig(
                 pageSize = 10, enablePlaceholders = false
             ),
-            remoteMediator = mediator,
+            remoteMediator = StoryRemoteMediator(database, remoteDataSource),
             pagingSourceFactory = {
-                storyDao.getAllStory()
+                database.storyDao().getAllStory()
             }
         ).liveData
     }

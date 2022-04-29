@@ -23,4 +23,5 @@
     <string name="descDesc">Add Story Description…</string>
     <string name="addLocation">Add Location</string>
     <string name="retry">Try Again</string>
+    <string name="location">location</string>
 </resources>

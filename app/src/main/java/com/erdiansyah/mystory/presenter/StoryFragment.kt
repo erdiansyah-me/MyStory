@@ -9,7 +9,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.erdiansyah.mystory.R
-import com.erdiansyah.mystory.data.Result
 import com.erdiansyah.mystory.data.remote.ListStoryItem
 import com.erdiansyah.mystory.databinding.FragmentStoryBinding
 
@@ -19,7 +18,6 @@ class StoryFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
     private val storyViewModel: StoryViewModel by activityViewModels()
     private val mAdapter = ListAdapter()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,10 +30,6 @@ class StoryFragment : Fragment() {
                     mAdapter.retry()
                 }
             )
-            setHasFixedSize(true)
-        }
-        storyViewModel.getStoryResponse.observe(viewLifecycleOwner) {
-            mAdapter.submitData(lifecycle,it)
         }
         mAdapter.setOnItemClickListener(object : ListAdapter.OnItemClickListener{
             override fun onItemClicked(data: ListStoryItem) {
@@ -52,29 +46,16 @@ class StoryFragment : Fragment() {
             findNavController().navigate(R.id.action_storyFragment_to_addStoryFragment)
         }
         setHasOptionsMenu(true)
-
+        storyViewModel.getStoryResponse.observe(viewLifecycleOwner){
+            mAdapter.submitData(lifecycle,it)
+        }
         return binding.root
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        storyViewModel.getStoryResponse.observe(viewLifecycleOwner) {
-//            mAdapter.submitData(lifecycle,it)
-////            when (it){
-////                is Result.Success -> {
-////                    binding.progressBar.visibility = View.GONE
-////                    val list = it.data?.listStory ?: emptyList()
-////                    mAdapter.setListItem(list)
-////                }
-////                is Result.Error -> {
-////                    Toast.makeText(requireContext(), "Gagal Mendapatkan Story", Toast.LENGTH_SHORT).show()
-////                }
-////                else -> {
-////                    binding.progressBar.visibility = View.VISIBLE
-////                }
-////            }
-//        }
-//    }
+    override fun onResume() {
+        super.onResume()
+        mAdapter.refresh()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

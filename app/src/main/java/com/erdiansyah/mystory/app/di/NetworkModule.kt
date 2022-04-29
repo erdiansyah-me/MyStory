@@ -4,6 +4,7 @@ import com.erdiansyah.mystory.BuildConfig
 import com.erdiansyah.mystory.app.Config
 import com.erdiansyah.mystory.data.AuthInterceptor
 import com.erdiansyah.mystory.data.UserPreference
+import com.erdiansyah.mystory.data.remote.StoryService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,4 +53,11 @@ object NetworkModule {
         .addConverterFactory(GsonConverterFactory.create())
         .client(okHttpClient)
         .build()
+
+    @Provides
+    fun provideStoryService(
+        retrofit: Retrofit
+    ) : StoryService {
+        return retrofit.create(StoryService::class.java)
+    }
 }
